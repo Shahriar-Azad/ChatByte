@@ -13,7 +13,7 @@ import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
 app.use(express.json());
@@ -25,25 +25,23 @@ app.use(
   })
 );
 
-// Comment out routes one by one to debug
-console.log("Setting up auth routes...");
 app.use("/api/auth", authRoutes);
-
-console.log("Setting up message routes...");
 app.use("/api/messages", messageRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  console.log("Setting up static files...");
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // Fixed path - try different variations
+  const frontendPath = path.join(__dirname, "frontend", "dist");
+  
+  console.log("Serving static files from:", frontendPath);
+  app.use(express.static(frontendPath));
 
-  console.log("Setting up catch-all route...");
-  // Try the regex approach instead
   app.get(/^(?!\/api).*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    const indexPath = path.join(frontendPath, "index.html");
+    console.log("Serving index.html from:", indexPath);
+    res.sendFile(indexPath);
   });
 }
 
-console.log("Starting server...");
 server.listen(PORT, () => {
   console.log("server is running on PORT:" + PORT);
   connectDB();
