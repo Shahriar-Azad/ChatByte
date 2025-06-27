@@ -25,18 +25,25 @@ app.use(
   })
 );
 
+// Comment out routes one by one to debug
+console.log("Setting up auth routes...");
 app.use("/api/auth", authRoutes);
+
+console.log("Setting up message routes...");
 app.use("/api/messages", messageRoutes);
 
 if (process.env.NODE_ENV === "production") {
+  console.log("Setting up static files...");
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // Fixed catch-all route - use this instead of "*"
-  app.get("/*", (req, res) => {
+  console.log("Setting up catch-all route...");
+  // Try the regex approach instead
+  app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
+console.log("Starting server...");
 server.listen(PORT, () => {
   console.log("server is running on PORT:" + PORT);
   connectDB();
