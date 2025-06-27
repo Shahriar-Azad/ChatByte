@@ -4,11 +4,8 @@ import { getMessages, getUsersForSidebar, sendMessage } from "../controllers/mes
 
 const router = express.Router();
 
-// Specific routes first
 router.get("/users", protectRoute, getUsersForSidebar);
-
-// ✅ FIXED: changed from "/:id" to "/chat/:id"
-router.get("/chat/:id", protectRoute, getMessages);
+router.get("/:id", protectRoute, getMessages);
 
 router.post("/send/:id", protectRoute, sendMessage);
 
