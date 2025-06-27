@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-
 import path from "path";
 
 import { connectDB } from "./lib/db.js";
@@ -13,38 +12,37 @@ import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser());
+
+// ✅ CORS setup for both dev & production
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
   })
 );
 
-// Comment out routes one by one to debug
-console.log("Setting up auth routes...");
+// ✅ Routes
 app.use("/api/auth", authRoutes);
-
-console.log("Setting up message routes...");
 app.use("/api/messages", messageRoutes);
 
+// ✅ Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  console.log("Setting up static files...");
+  console.log("Serving frontend from /frontend/dist...");
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  console.log("Setting up catch-all route...");
-  // Try the regex approach instead
+  // ✅ Catch-all to serve index.html for React Router
   app.get(/^(?!\/api).*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
   });
 }
 
-console.log("Starting server...");
+// ✅ Start server
 server.listen(PORT, () => {
-  console.log("server is running on PORT:" + PORT);
+  console.log("Server is running on PORT:", PORT);
   connectDB();
 });
