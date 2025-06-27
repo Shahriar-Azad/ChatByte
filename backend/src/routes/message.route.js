@@ -4,8 +4,11 @@ import { getMessages, getUsersForSidebar, sendMessage } from "../controllers/mes
 
 const router = express.Router();
 
+// ✅ Keep fixed/static routes before dynamic ones
 router.get("/users", protectRoute, getUsersForSidebar);
-router.get("/:id", protectRoute, getMessages);
+
+// ✅ Changed route from "/:id" to "/chat/:id" to avoid conflict
+router.get("/chat/:id", protectRoute, getMessages);
 
 router.post("/send/:id", protectRoute, sendMessage);
 
