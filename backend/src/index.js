@@ -13,7 +13,7 @@ import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
 app.use(express.json());
@@ -29,16 +29,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  // Fixed path - try different variations
-  const frontendPath = path.join(__dirname, "frontend", "dist");
-  
-  console.log("Serving static files from:", frontendPath);
-  app.use(express.static(frontendPath));
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.get(/^(?!\/api).*/, (req, res) => {
-    const indexPath = path.join(frontendPath, "index.html");
-    console.log("Serving index.html from:", indexPath);
-    res.sendFile(indexPath);
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
