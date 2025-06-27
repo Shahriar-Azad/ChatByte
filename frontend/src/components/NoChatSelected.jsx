@@ -1,4 +1,3 @@
-import { MessageSquare } from "lucide-react";
 import { FaCommentDots } from "react-icons/fa";
 
 const NoChatSelected = () => {
